@@ -276,6 +276,7 @@ namespace UnityEngine.UI
 
         protected override void OnRectTransformDimensionsChange()
         {
+            Debug.Log("Graphic : OnRectTransformDimensionsChange");
             if (gameObject.activeInHierarchy)
             {
                 // prevent double dirtying...
@@ -291,12 +292,15 @@ namespace UnityEngine.UI
 
         protected override void OnBeforeTransformParentChanged()
         {
+            Debug.Log("Graphic : OnBeforeTransformParentChanged");
             GraphicRegistry.UnregisterGraphicForCanvas(canvas, this);
             LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
         }
 
         protected override void OnTransformParentChanged()
         {
+            Debug.Log("Graphic : OnTransformParentChanged");
+
             base.OnTransformParentChanged();
 
             m_Canvas = null;
@@ -473,7 +477,9 @@ namespace UnityEngine.UI
         protected override void OnEnable()
         {
             base.OnEnable();
+            //获得当前所属的Canvas
             CacheCanvas();
+            //将Graphic和所属的Canvas存储到GraphicRegistry中，以记录他们的所属关系
             GraphicRegistry.RegisterGraphicForCanvas(canvas, this);
 
 #if UNITY_EDITOR
@@ -482,6 +488,7 @@ namespace UnityEngine.UI
             if (s_WhiteTexture == null)
                 s_WhiteTexture = Texture2D.whiteTexture;
 
+            //将Graphic设置为Dirty，所以会Rebuild Graphic，如果把下面代码注释掉，Graphic不会被绘制
             SetAllDirty();
         }
 
@@ -515,6 +522,8 @@ namespace UnityEngine.UI
 
         protected override void OnCanvasHierarchyChanged()
         {
+            Debug.Log("Graphic: OnCanvasHierarchyChanged");
+
             // Use m_Cavas so we dont auto call CacheCanvas
             Canvas currentCanvas = m_Canvas;
 
@@ -615,6 +624,7 @@ namespace UnityEngine.UI
             }
         }
 
+        //生成要绘制的Mesh,并存入CanvasRenderer
         private void DoMeshGeneration()
         {
             if (rectTransform != null && rectTransform.rect.width >= 0 && rectTransform.rect.height >= 0)
